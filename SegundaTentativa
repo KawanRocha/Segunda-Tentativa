@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quer sair comigo?</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #0b132b; /* Fundo azul escuro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Container dos corações animados */
+        .coracoes-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none; /* Garante que os corações não atrapalhem os cliques */
+        }
+
+        .coracao-flutuante {
+            position: absolute;
+            bottom: -50px;
+            color: #8b0000; /* Vermelho escuro */
+            font-size: 24px;
+            opacity: 0.7;
+            animation: subir linear infinite;
+        }
+
+        @keyframes subir {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-105vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95); /* Branco levemente transparente */
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            z-index: 2; /* Fica por cima dos corações */
+        }
+
+        h1 {
+            color: #8b0000; /* Vermelho escuro combinando */
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #2d3748;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .options-container {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .option-item {
+            margin: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            color: #2d3748;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            height: 50px;
+            position: relative;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+
+        #btn-sim {
+            background-color: #8b0000;
+            color: white;
+        }
+
+        #btn-sim:hover {
+            transform: scale(1.1);
+        }
+
+        #btn-nao {
+            background-color: #4a5568;
+            color: white;
+            position: absolute;
+        }
+
+        .sucesso {
+            display: none;
+        }
+
+        .sucesso h2 {
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fundo com os corações -->
+    <div class="coracoes-background" id="fundo-coracoes"></div>
+
+    <div class="container" id="card-principal">
+        <h1>Quer sair comigo? 🌹</h1>
+        <p>Escolha um dos lugares abaixo para a nossa data:</p>
+        
+        <div class="options-container">
+            <div class="option-item">
+                <input type="radio" id="lugar1" name="lugar" value="Jantar num restaurante japonês" checked>
+                <label for="lugar1">🍣 Jantar japonês</label>
+            </div>
+            <div class="option-item">
+                <input type="radio" id="lugar2" name="lugar" value="Ir ao cinema e comer pipoca">
+                <label for="lugar2">🎬 Cinema e pipoca</label>
+            </div>
+            <div class="option-item">
+                <input type="radio" id="lugar3" name="lugar" value="Tomar um café e comer um doce">
+                <label for="lugar3">☕ Café e um doce</label>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button id="btn-sim" onclick="aceitou()">SIM!</button>
+            <button id="btn-nao" onmouseover="furgir()" onclick="furgir()">NÃO</button>
+        </div>
+    </div>
+
+    <div class="container sucesso" id="card-sucesso">
+        <h2>Eba! Mal posso esperar! 🥰</h2>
+        <p id="mensagem-final"></p>
+    </div>
+
+    <script>
+        const btnNao = document.getElementById('btn-nao');
+        const cardPrincipal = document.getElementById('card-principal');
+        const cardSucesso = document.getElementById('card-sucesso');
+        const mensagemFinal = document.getElementById('mensagem-final');
+        const fundoCoracoes = document.getElementById('fundo-coracoes');
+
+        // Gerador automático e infinito de corações
+        function criarCoracao() {
+            const coracao = document.createElement('div');
+            coracao.classList.add('coracao-flutuante');
+            coracao.innerText = '❤️';
+            
+            // Posição horizontal aleatória
+            coracao.style.left = Math.random() * 100 + 'vw';
+            
+            // Tamanhos variados para dar profundidade
+            const tamanho = Math.random() * 20 + 15;
+            coracao.style.fontSize = tamanho + 'px';
+            
+            // Velocidades de subida variadas
+            const duracao = Math.random() * 4 + 4; // Entre 4 e 8 segundos
+            coracao.style.animationDuration = duracao + 's';
+            
+            fundoCoracoes.appendChild(coracao);
+
+            // Remove o coração da tela depois que a animação acaba
+            setTimeout(() => {
+                coracao.remove();
+            }, duracao * 1000);
+        }
+
+        // Cria um novo coração a cada 300 milissegundos
+        setInterval(criarCoracao, 300);
+
+        // Função que faz o botão "Não" fugir
+        function furgir() {
+            const larguraJanela = window.innerWidth - 100;
+            const alturaJanela = window.innerHeight - 50;
+
+            const novoX = Math.random() * larguraJanela;
+            const novoY = Math.random() * alturaJanela;
+
+            btnNao.style.position = 'fixed';
+            btnNao.style.left = novoX + 'px';
+            btnNao.style.top = novoY + 'px';
+        }
+
+        // Função executada ao clicar no "Sim"
+        function aceitou() {
+            const localSelecionado = document.querySelector('input[name="lugar"]:checked').value;
+            
+            cardPrincipal.style.display = 'none';
+            cardSucesso.style.display = 'block';
+            
+            mensagemFinal.innerText = `Combinado! Nosso encontro está confirmado para: ${localSelecionado}. Vou te mandar uma mensagem para combinarmos o horário! ❤️`;
+        }
+    </script>
+</body>
+</html>
